@@ -3,10 +3,15 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:uni_links/uni_links.dart';
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
+  final Uri uri;
+ 
+  MyApp({this.uri});
+
   @override
   Widget build(BuildContext context) {
     return Home();
@@ -14,6 +19,9 @@ class MyApp extends StatelessWidget {
 }
 
 class Home extends StatefulWidget {
+  final Uri uri;
+  Home({Key key, this.uri}) : super(key: key);
+
   @override
   _HomeState createState() => _HomeState();
 }
@@ -31,6 +39,7 @@ class _HomeState extends State<Home> {
         body: Center(
           child: Column(
             children: [
+              Text(widget.uri.toString()),
               Text('Hello World'),
               InkWell(
                 child: Text('Hello'),

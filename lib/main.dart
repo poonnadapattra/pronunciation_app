@@ -1,24 +1,36 @@
+import 'dart:async';
+
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 import 'dart:io';
 import 'dart:convert';
 import 'package:path_provider/path_provider.dart';
 import 'package:pronunciation_app/TextToSpeechAPI.dart';
+import 'package:pronunciation_app/login.dart';
 import 'package:pronunciation_app/voice.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'dart:convert' show json, jsonEncode, utf8;
+import 'package:http/http.dart' as http;
+import 'package:uni_links/uni_links.dart';
 
-
-void main() => runApp(new MyApp());
+void main() {
+  runApp(new MyApp());
+}
 
 class MyApp extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
       title: 'DeepMind WaveNet Text To Speech',
       debugShowCheckedModeBanner: false,
       theme: new ThemeData(
-        primarySwatch: Colors.teal,
+        // primarySwatch: Colors.teal,
       ),
-      home: new MyHomePage(title: 'DeepMind WaveNet Text To Speech'),
+      home: LoginPage(),
+      // home: new MyHomePage(title: 'DeepMind WaveNet Text To Speech'),
     );
   }
 }
@@ -43,6 +55,18 @@ class _MyHomePageState extends State<MyHomePage> {
   initState() {
     super.initState();
     getVoices();
+  }
+  
+  void auth() async {
+    final jsonResponse = await http.post('https://texttospeech.googleapis.com/v1beta1/text:synthesize',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ya29.a0AfH6SMDuA-cTdJ2mWa8A5a7ImAriHJ53XaBmNVF07xSzcXZ3DHz4HzO9u4H_DpgaqyJ4Jw9VTDwT7NtDc4UA9xaznV1eYHxAUt67lQ1QnKpUYrKRX8e3mZhKrRR40vNMWHDT61GNWfG2nMvmuNf_HdxTkPwdu3pz4qQ'
+          // Authorization: Bearer ya29.a0AfH6SMAQvBKL5pXwxOvTJu10ASh5jWWPWi6hgr6Gz9eDpvsYODorl7Z44IR7y_N5wYGI2hD2X3DPTL33qjpfxNRS3GlQuVA5bANTy7_pkdspLzzrTnEl4QjSHLFc6XsPnBZDUhkJ68aAWOmW_B2P7dF8yppNKT9CvfOo
+          // 'Authorization': 'Bearer ya29.a0AfH6SMAQvBKL5pXwxOvTJu10ASh5jWWPWi6hgr6Gz9eDpvsYODorl7Z44IR7y_N5wYGI2hD2X3DPTL33qjpfxNRS3GlQuVA5bANTy7_pkdspLzzrTnEl4QjSHLFc6XsPnBZDUhkJ68aAWOmW_B2P7dF8yppNKT9CvfOo'
+        },
+        // body: jsonEncode(_json)
+      );
   }
 
 
@@ -105,6 +129,29 @@ class _MyHomePageState extends State<MyHomePage> {
                   hintText: 'Please enter text to convert to WaveNet Speech'
               ),
             ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: InkWell(
+              child: Text('launch url'),
+              onTap: () async {
+                const url = "https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code&client_id=756540441847-uelprsnktfct6dj2vib2ofr1hb9k160n.apps.googleusercontent.com&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcloud-platform&access_type=offline";
+                // const url = "https://flutter.io";
+                // if (await canLaunch(url))
+                //   launch(url);
+                // // else com.example.pronunciation_app
+                if (await canLaunch(url)) {
+                  await launch(
+                    url,
+                    // forceSafariVC: true,
+                    // forceWebView: true,
+                    // enableDomStorage: true,
+                  );
+                } else {
+                  throw 'Could not launch $url';
+                }
+              },
+            ),
           )
         ])
       ),
@@ -121,4 +168,19 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+}
+
+class SecondPage extends StatelessWidget {
+ 
+  final Uri uri;
+ 
+  SecondPage(this.uri);
+ 
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(appBar: AppBar(
+        title: Text("benznest's blog")
+    ),
+        body: Container(child: Center(child: Text(uri.toString(), style: TextStyle(fontSize: 22),))));
+  }
 }
